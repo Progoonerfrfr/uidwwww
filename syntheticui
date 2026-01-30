@@ -1649,11 +1649,11 @@ local config_holder
 					image = "rbxassetid://115194686863276",
 				})
 
-				local watermark = library:watermark({default = os.date('Niggahack |  - %b %d %Y - %H:%M:%S')})  
+				local watermark = library:watermark({default = os.date('Synthetic |  - %b %d %Y - %H:%M:%S')})  
 
 				task.spawn(function()
 					while task.wait(1) do 
-						watermark.change_text(os.date('Niggahack - Rost - %b %d %Y - %H:%M:%S'))
+						watermark.change_text(os.date('Synthetic - Developer - %b %d %Y - %H:%M:%S'))
 					end 
 				end) 
 
@@ -1714,7 +1714,7 @@ local config_holder
 				section:toggle({name = "Keybind List", flag = "keybind_list", callback = function(bool)
 					library.keybind_list_frame.Visible = bool
 				end})
-				section:toggle({name = "Watermark", flag = "watermark", callback = function(bool)
+				section:toggle({name = "Watermark", default = true, flag = "watermark", callback = function(bool)
 					watermark.set_visible(bool)
 				end})
 				section:button_holder({})
