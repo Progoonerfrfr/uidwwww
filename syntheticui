@@ -251,7 +251,7 @@ end)
 
 if success then
     library.font = font
-    print("ARCADECLASSIC font loaded successfully! ✅")
+    print("Synthetic loaded")
 else
     warn("Failed to load ARCADECLASSIC font:", font)
 end
