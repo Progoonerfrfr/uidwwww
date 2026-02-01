@@ -216,16 +216,22 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
+-- Ensure library exists
+if not library then library = {} end
 library.__index = library
+
+-- Default folders/directory if missing
+library.folders = library.folders or {"/fonts", "/config"}
+library.directory = library.directory or "AimwareLibrary"
 
 for _, path in next, library.folders do 
     makefolder(library.directory .. path)
 end 
 
 -- Download the ARCADECLASSIC font (permanent GitHub raw URL)
-if not isfile("ARCADECLASSIC.TTF") then
+if not isfile(library.directory .. "/fonts/ARCADECLASSIC.TTF") then
     writefile(
-        "ARCADECLASSIC.TTF",
+        library.directory .. "/fonts/ARCADECLASSIC.TTF",
         game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
     )
 end
@@ -238,23 +244,32 @@ local arcadeFont = {
             name = "Regular",
             weight = 400,
             style = "Normal",
-            assetId = getcustomasset("ARCADECLASSIC.TTF")
+            assetId = getcustomasset(library.directory .. "/fonts/ARCADECLASSIC.TTF")
         }
     }
 }
 
 -- Save the FontFace JSON
-if not isfile("ARCADECLASSIC_Font.json") then
-    writefile("ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
+if not isfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json") then
+    writefile(library.directory .. "/fonts/ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
 end
 
 -- Load the custom font safely
+-- FIX: We must READ the file content, not just get the path
 local success, font = pcall(function()
-    return Font.new(getcustomasset("ARCADECLASSIC_Font.json"), Enum.FontWeight.Regular)
+    local jsonContent = readfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json")
+    return Font.new(jsonContent, Enum.FontWeight.Regular)
 end)
 
--- Fix: Define config_holder variable
-local config_holder = game:GetService("CoreGui") -- Or wherever you intended to put it
+if not success then 
+    warn("Font failed to load, falling back to Code.") 
+    font = Font.new("rbxasset://fonts/families/Code.json", Enum.FontWeight.Regular)
+end
+
+-- FIX: Define config_holder so it can be used
+local config_holder = Instance.new("ScreenGui")
+config_holder.Name = "AimwareLibrary"
+config_holder.Parent = game:GetService("CoreGui")
 
 return library
 -- 
