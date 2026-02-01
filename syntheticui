@@ -249,13 +249,6 @@ local success, font = pcall(function()
     return Font.new(getcustomasset("ARCADECLASSIC_Font.json"), Enum.FontWeight.Regular)
 end)
 
-if success then
-    library.font = font
-    print("ARCADECLASSIC font loaded successfully! ✅")
-else
-    warn("Failed to load ARCADECLASSIC font:", font)
-end
-
 local config_holder
 -- 
 
