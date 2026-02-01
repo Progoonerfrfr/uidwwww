@@ -107,12 +107,12 @@
 		preset = {
 			["outline"] = hex("#0A0A0A"), -- 
 			["inline"] = hex("#2D2D2D"), --
-			["accent"] = hex("#fc3e3e"), --
+			["accent"] = hex("#52655f"), --
 			["high_contrast"] = hex("#141414"),
 			["low_contrast"] = hex("#1E1E1E"),
 			["text"] = hex("#B4B4B4"),
 			["text_outline"] = rgb(0, 0, 0),
-			["glow"] = hex("#fc3e3e"), 
+			["glow"] = hex("#52655f"), 
 		},
 
 		utility = {
@@ -216,27 +216,14 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
--- Ensure library exists
-if not library then library = {} end
-library.__index = library
+	library.__index = library
 
--- Default folders/directory if missing
-library.folders = library.folders or {"/fonts", "/config"}
-library.directory = library.directory or "AimwareLibrary"
+	for _, path in next, library.folders do 
+		makefolder(library.directory .. path)
+	end 
 
-for _, path in next, library.folders do 
-    makefolder(library.directory .. path)
-end 
+	writefile("ffff.ttf", game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF"))
 
--- Download the ARCADECLASSIC font (permanent GitHub raw URL)
-if not isfile(library.directory .. "/fonts/ARCADECLASSIC.TTF") then
-    writefile(
-        library.directory .. "/fonts/ARCADECLASSIC.TTF",
-        game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
-    )
-end
-
--- FontFace definition (JSON)
 local arcadeFont = {
     name = "ARCADECLASSIC",
     faces = {
@@ -249,29 +236,11 @@ local arcadeFont = {
     }
 }
 
--- Save the FontFace JSON
-if not isfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json") then
-    writefile(library.directory .. "/fonts/ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
-end
+	writefile("dddd.ttf", http_service:JSONEncode(tahoma))
 
--- Load the custom font safely
--- FIX: We must READ the file content, not just get the path
-local success, font = pcall(function()
-    local jsonContent = readfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json")
-    return Font.new(jsonContent, Enum.FontWeight.Regular)
-end)
+	library.font = Font.new(getcustomasset("dddd.ttf"), Enum.FontWeight.Regular)
 
-if not success then 
-    warn("Font failed to load, falling back to Code.") 
-    font = Font.new("rbxasset://fonts/families/Code.json", Enum.FontWeight.Regular)
-end
-
--- FIX: Define config_holder so it can be used
-local config_holder = Instance.new("ScreenGui")
-config_holder.Name = "AimwareLibrary"
-config_holder.Parent = game:GetService("CoreGui")
-
-return library
+	local config_holder 
 -- 
 
 -- library functions 
