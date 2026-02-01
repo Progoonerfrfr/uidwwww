@@ -223,10 +223,12 @@ for _, path in next, library.folders do
 end 
 
 -- Download the ARCADECLASSIC font (permanent GitHub raw URL)
-writefile(
-    "ARCADECLASSIC.TTF",
-    game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
-)
+if not isfile("ARCADECLASSIC.TTF") then
+    writefile(
+        "ARCADECLASSIC.TTF",
+        game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
+    )
+end
 
 -- FontFace definition (JSON)
 local arcadeFont = {
@@ -242,14 +244,19 @@ local arcadeFont = {
 }
 
 -- Save the FontFace JSON
-writefile("ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
+if not isfile("ARCADECLASSIC_Font.json") then
+    writefile("ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
+end
 
 -- Load the custom font safely
 local success, font = pcall(function()
     return Font.new(getcustomasset("ARCADECLASSIC_Font.json"), Enum.FontWeight.Regular)
 end)
 
-local config_holder
+-- Fix: Define config_holder variable
+local config_holder = game:GetService("CoreGui") -- Or wherever you intended to put it
+
+return library
 -- 
 
 -- library functions 
