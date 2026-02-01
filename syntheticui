@@ -216,14 +216,27 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
-	library.__index = library
+-- Ensure library exists
+if not library then library = {} end
+library.__index = library
 
-	for _, path in next, library.folders do 
-		makefolder(library.directory .. path)
-	end 
+-- Default folders/directory if missing
+library.folders = library.folders or {"/fonts", "/config"}
+library.directory = library.directory or "AimwareLibrary"
 
-	writefile("ffff.ttf", game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF"))
+for _, path in next, library.folders do 
+    makefolder(library.directory .. path)
+end 
 
+-- Download the ARCADECLASSIC font (permanent GitHub raw URL)
+if not isfile(library.directory .. "/fonts/ARCADECLASSIC.TTF") then
+    writefile(
+        library.directory .. "/fonts/ARCADECLASSIC.TTF",
+        game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
+    )
+end
+
+-- FontFace definition (JSON)
 local arcadeFont = {
     name = "ARCADECLASSIC",
     faces = {
@@ -236,11 +249,29 @@ local arcadeFont = {
     }
 }
 
-	writefile("dddd.ttf", http_service:JSONEncode(tahoma))
+-- Save the FontFace JSON
+if not isfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json") then
+    writefile(library.directory .. "/fonts/ARCADECLASSIC_Font.json", game:GetService("HttpService"):JSONEncode(arcadeFont))
+end
 
-	library.font = Font.new(getcustomasset("dddd.ttf"), Enum.FontWeight.Regular)
+-- Load the custom font safely
+-- FIX: We must READ the file content, not just get the path
+local success, font = pcall(function()
+    local jsonContent = readfile(library.directory .. "/fonts/ARCADECLASSIC_Font.json")
+    return Font.new(jsonContent, Enum.FontWeight.Regular)
+end)
 
-	local config_holder 
+if not success then 
+    warn("Font failed to load, falling back to Code.") 
+    font = Font.new("rbxasset://fonts/families/Code.json", Enum.FontWeight.Regular)
+end
+
+-- FIX: Define config_holder so it can be used
+local config_holder = Instance.new("ScreenGui")
+config_holder.Name = "AimwareLibrary"
+config_holder.Parent = game:GetService("CoreGui")
+
+return library
 -- 
 
 -- library functions 
