@@ -216,42 +216,46 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
+local library = library or {}
 library.__index = library
 
-for _, path in next, library.folders do 
-	makefolder(library.directory .. path)
-end 
+local http_service = game:GetService("HttpService")
 
--- download ARCADE font
+-- Create folders
+for _, path in pairs(library.folders or {}) do
+    makefolder(library.directory .. path)
+end
+
+-- Download ARCADE font
 writefile(
-	"arcade.ttf",
-	game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
+    "arcade.ttf",
+    game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
 )
 
--- keep the table (unused, but not removed)
+-- Keep font metadata
 local tahoma = {
-	name = "ARCADECLASSIC",
-	faces = {
-		{
-			name = "Regular",
-			weight = 400,
-			style = "normal",
-			assetId = getcustomasset("arcade.ttf")
-		}
-	}
+    name = "ARCADECLASSIC",
+    faces = {
+        {
+            name = "Regular",
+            weight = 400,
+            style = "normal",
+            assetId = getcustomasset("arcade.ttf")
+        }
+    }
 }
 
--- keep this writefile (even though Roblox ignores it)
 writefile("dddd.ttf", http_service:JSONEncode(tahoma))
 
--- ✅ THIS is the actual fix
+-- Load the font
 library.font = Font.new(
-	getcustomasset("arcade.ttf"),
-	Enum.FontWeight.Regular,
-	Enum.FontStyle.Normal
+    getcustomasset("arcade.ttf"),
+    Enum.FontWeight.Regular,
+    Enum.FontStyle.Normal
 )
 
-local config_holder
+-- Config holder
+local config_holder = {}
 -- 
 
 -- library functions 
