@@ -215,6 +215,16 @@
 		[Enum.KeyCode.Escape] = "ESC",
 		[Enum.KeyCode.Space] = "SPC",
 	}
+		
+-- Just keep the library index setup
+library.__index = library
+
+for _, path in next, library.folders do
+    makefolder(library.directory .. path)
+end
+
+local config_holder
+-- 
 
 -- library functions 
 	-- misc functions
