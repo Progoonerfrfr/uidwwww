@@ -216,14 +216,31 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
--- Just keep the library index setup
-library.__index = library
+	library.__index = library
 
-for _, path in next, library.folders do
-    makefolder(library.directory .. path)
-end
+	for _, path in next, library.folders do 
+		makefolder(library.directory .. path)
+	end 
 
-local config_holder
+	writefile("ffff.ttf", game:HttpGet("https://github.com/JuixyV2/utils/raw/refs/heads/main/ProggyClean.ttf"))
+
+	local tahoma = {
+		name = "SmallestPixel7",
+		faces = {
+			{
+				name = "Regular",
+				weight = 400,
+				style = "normal",
+				assetId = getcustomasset("ffff.ttf")
+			}
+		}
+	}
+
+	writefile("dddd.ttf", http_service:JSONEncode(tahoma))
+
+	library.font = Font.new(getcustomasset("dddd.ttf"), Enum.FontWeight.Regular)
+
+	local config_holder 
 -- 
 
 -- library functions 
