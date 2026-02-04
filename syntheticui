@@ -216,46 +216,56 @@
 		[Enum.KeyCode.Space] = "SPC",
 	}
 		
-local library = library or {}
+local HttpService = game:GetService("HttpService")
+
 library.__index = library
 
-local http_service = game:GetService("HttpService")
-
--- Create folders
-for _, path in pairs(library.folders or {}) do
-    makefolder(library.directory .. path)
+for _, path in next, library.folders do
+	makefolder(library.directory .. path)
 end
 
--- Download ARCADE font
-writefile(
-    "arcade.ttf",
-    game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
-)
+local fontFolder = library.directory .. "/fonts"
+makefolder(fontFolder)
 
--- Keep font metadata
-local tahoma = {
-    name = "ARCADECLASSIC",
-    faces = {
-        {
-            name = "Regular",
-            weight = 400,
-            style = "normal",
-            assetId = getcustomasset("arcade.ttf")
-        }
-    }
+local fontPath = fontFolder .. "/ARCADECLASSIC.ttf"
+local jsonPath = fontFolder .. "/ARCADECLASSIC_Font.json"
+
+if not isfile(fontPath) then
+	writefile(
+		fontPath,
+		game:HttpGet("https://raw.githubusercontent.com/bobwgawg-ai/arcadce/main/ARCADECLASSIC.TTF")
+	)
+end
+
+local arcadeFont = {
+	name = "ARCADECLASSIC",
+	faces = {
+		{
+			name = "Regular",
+			weight = 400,
+			style = "Normal",
+			assetId = getcustomasset(fontPath)
+		}
+	}
 }
 
-writefile("dddd.ttf", http_service:JSONEncode(tahoma))
+writefile(jsonPath, HttpService:JSONEncode(arcadeFont))
 
--- Load the font
-library.font = Font.new(
-    getcustomasset("arcade.ttf"),
-    Enum.FontWeight.Regular,
-    Enum.FontStyle.Normal
-)
+local success, result = pcall(function()
+	return Font.new(
+		getcustomasset(jsonPath),
+		Enum.FontWeight.Regular,
+		Enum.FontStyle.Normal
+	)
+end)
 
--- Config holder
-local config_holder = {}
+if success then
+	library.font = result
+else
+	warn("Failed to load font:", result)
+end
+
+local config_holder
 -- 
 
 -- library functions 
